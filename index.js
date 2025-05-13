@@ -1,40 +1,37 @@
 const express = require('express');
-const { resolve } = require('path');
-const fs = require('fs');
 
 const app = express();
 const port = 3010;
 
 app.use(express.json());
 
+// Dummy student data
+const students = [
+  { name: "Alice", total: 85 },
+  { name: "Bob", total: 90 },
+  { name: "Charlie", total: 72 },
+  { name: "David", total: 65 },
+  { name: "Eve", total: 95 },
+];
+
 app.post('/students/above-threshold', (req, res) => {
   const { threshold } = req.body;
 
+  // Validate threshold input
   if (typeof threshold !== 'number' || isNaN(threshold)) {
     return res.status(400).json({ error: "Invalid threshold value. It must be a number." });
   }
 
-  fs.readFile('data.json', 'utf8', (err, data) => {
-    if (err) {
-      return res.status(500).json({ error: "Error reading student data file." });
-    }
+  // Filter students based on threshold
+  const filteredStudents = students.filter(student => student.total > threshold);
 
-    let students;
-    try {
-      students = JSON.parse(data);
-    } catch (parseError) {
-      return res.status(500).json({ error: "Error parsing student data." });
-    }
-
-    const filteredStudents = students.filter(student => student.total > threshold);
-
-    res.json({
-      count: filteredStudents.length,
-      students: filteredStudents.map(student => ({
-        name: student.name,
-        total: student.total
-      }))
-    });
+  // Return the result
+  res.json({
+    count: filteredStudents.length,
+    students: filteredStudents.map(student => ({
+      name: student.name,
+      total: student.total
+    }))
   });
 });
 
