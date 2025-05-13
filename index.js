@@ -5,7 +5,6 @@ const port = 3010;
 
 app.use(express.json());
 
-// Dummy student data
 const students = [
   { name: "Alice", total: 85 },
   { name: "Bob", total: 90 },
@@ -17,15 +16,12 @@ const students = [
 app.post('/students/above-threshold', (req, res) => {
   const { threshold } = req.body;
 
-  // Validate threshold input
   if (typeof threshold !== 'number' || isNaN(threshold)) {
     return res.status(400).json({ error: "Invalid threshold value. It must be a number." });
   }
 
-  // Filter students based on threshold
   const filteredStudents = students.filter(student => student.total > threshold);
 
-  // Return the result
   res.json({
     count: filteredStudents.length,
     students: filteredStudents.map(student => ({
